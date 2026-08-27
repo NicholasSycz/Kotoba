@@ -1,0 +1,126 @@
+@import "tailwindcss";
+
+/**
+ * Design tokens.
+ *
+ * Colours are declared as raw custom properties first, then mapped into
+ * Tailwind's namespace with `@theme inline`. Themes therefore only ever swap
+ * the raw values, and every utility (`bg-surface`, `text-muted`, …) follows
+ * automatically — no `dark:` variant needed anywhere in the components.
+ */
+
+:root {
+  --bg: #fbf9f5;
+  --surface: #ffffff;
+  --surface-sunken: #f4f0e8;
+  --ink: #191614;
+  --ink-muted: #6c6259;
+  --line: #e5ded2;
+  --accent: #9a3412;
+  --accent-ink: #ffffff;
+  --accent-soft: #fbeee6;
+  --focus: #9a3412;
+}
+
+/* Default (no explicit choice) follows the OS. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14120f;
+    --surface: #1c1916;
+    --surface-sunken: #232019;
+    --ink: #f3efe8;
+    --ink-muted: #a89e92;
+    --line: #322d26;
+    --accent: #f0834f;
+    --accent-ink: #1a1512;
+    --accent-soft: #2a201a;
+    --focus: #f0834f;
+  }
+}
+
+/* An explicit choice wins over the OS in both directions. */
+:root[data-theme="dark"] {
+  --bg: #14120f;
+  --surface: #1c1916;
+  --surface-sunken: #232019;
+  --ink: #f3efe8;
+  --ink-muted: #a89e92;
+  --line: #322d26;
+  --accent: #f0834f;
+  --accent-ink: #1a1512;
+  --accent-soft: #2a201a;
+  --focus: #f0834f;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-sunken: var(--surface-sunken);
+  --color-ink: var(--ink);
+  --color-muted: var(--ink-muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+
+  --font-sans: var(--font-geist-sans);
+  --font-display: var(--font-display-serif);
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  /* Stops the page shifting sideways when a scrollbar appears. */
+  scrollbar-gutter: stable;
+}
+
+/* One consistent focus treatment, rather than per-component overrides. */
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Long post bodies read better with a slightly looser measure. */
+.prose-body {
+  max-width: 68ch;
+  line-height: 1.75;
+  white-space: pre-wrap;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.animate-rise {
+  animation: rise 0.5s var(--ease-out-expo) both;
+}
+
+/* Cards stagger in, but only a few deep — a long list shouldn't crawl. */
+.stagger > *:nth-child(1) { animation-delay: 0ms; }
+.stagger > *:nth-child(2) { animation-delay: 40ms; }
+.stagger > *:nth-child(3) { animation-delay: 80ms; }
+.stagger > *:nth-child(4) { animation-delay: 120ms; }
+.stagger > *:nth-child(5) { animation-delay: 160ms; }
+.stagger > *:nth-child(n + 6) { animation-delay: 200ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
