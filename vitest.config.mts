@@ -4,8 +4,7 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    // Pure logic by default; storage tests opt into jsdom per-file with a
-    // `@vitest-environment jsdom` docblock, since they need localStorage.
+    // Pure logic; a test needing a DOM opts in with a `@vitest-environment` docblock.
     environment: "node",
     include: ["**/*.test.ts"],
   },

@@ -4,9 +4,15 @@ import { Geist, Instrument_Serif } from "next/font/google";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { ToastHost } from "@/components/ToastHost";
+import { STORAGE_KEY } from "@/lib/storage";
 import { StoreProvider } from "@/store/StoreProvider";
 
 import "./globals.css";
+
+/** Applies the stored theme during parsing, so an explicit choice never flashes. */
+const THEME_SCRIPT = `(function(){try{var s=localStorage.getItem(${JSON.stringify(
+  STORAGE_KEY,
+)});if(!s)return;var t=JSON.parse(s).theme;if(t==="dark"||t==="high-contrast"){document.documentElement.setAttribute("data-theme",t)}}catch(e){}})()`;
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,7 +36,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       className={`${geistSans.variable} ${displaySerif.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body className="flex min-h-full flex-col">
         <StoreProvider>
           <SiteHeader />

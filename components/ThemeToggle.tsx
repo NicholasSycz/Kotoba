@@ -58,40 +58,31 @@ function Icon({ theme }: { theme: Theme }) {
   );
 }
 
-/**
- * Applies the stored theme to `<html>` and cycles system → high contrast → dark.
- *
- * The attribute is written from an effect rather than during render, so the
- * server-rendered markup stays theme-neutral and CSS handles the OS preference
- * on its own until the reader's choice loads.
- */
 export function ThemeToggle() {
   const dispatch = useAppDispatch();
   const theme = useAppSelector(selectTheme);
   const hydrated = useAppSelector(selectHydrated);
 
   useEffect(() => {
+    if (!hydrated) return;
+
     const root = document.documentElement;
     if (theme === "system") {
       root.removeAttribute("data-theme");
     } else {
       root.setAttribute("data-theme", theme);
     }
-  }, [theme]);
+  }, [hydrated, theme]);
 
   return (
     <button
       type="button"
       onClick={() => dispatch(setTheme(NEXT_THEME[theme]))}
       className="inline-flex items-center gap-2 rounded-full border border-line px-3 py-1.5 text-sm text-muted transition-colors hover:border-accent hover:text-accent"
-      // Until hydration lands the label would read "System" for everyone, which
-      // is misleading for a reader who previously chose otherwise.
-      aria-label={
-        hydrated ? `Theme: ${LABEL[theme]}. Switch to ${LABEL[NEXT_THEME[theme]]}.` : "Change theme"
-      }
+      aria-label={`Theme: ${LABEL[theme]}. Switch to ${LABEL[NEXT_THEME[theme]]}.`}
     >
       <Icon theme={theme} />
-      <span className="hidden sm:inline">{hydrated ? LABEL[theme] : ""}</span>
+      <span className="hidden sm:inline">{LABEL[theme]}</span>
     </button>
   );
 }

@@ -20,6 +20,9 @@
   --accent-ink: #ffffff;
   --accent-soft: #fbeee6;
   --focus: #9a3412;
+  --danger: #b42318;
+  --danger-soft: #fef3f2;
+  --danger-line: #f3c9c4;
 }
 
 /* Default (no explicit choice) follows the OS. */
@@ -35,6 +38,9 @@
     --accent-ink: #1a1512;
     --accent-soft: #2a201a;
     --focus: #f0834f;
+    --danger: #f8a29a;
+    --danger-soft: #2a1715;
+    --danger-line: #4a2723;
   }
 }
 
@@ -50,6 +56,9 @@
   --accent-ink: #ffffff;
   --accent-soft: #e8f0ff;
   --focus: #0047d9;
+  --danger: #a80000;
+  --danger-soft: #ffffff;
+  --danger-line: #a80000;
 }
 
 :root[data-theme="dark"] {
@@ -63,6 +72,9 @@
   --accent-ink: #1a1512;
   --accent-soft: #2a201a;
   --focus: #f0834f;
+  --danger: #f8a29a;
+  --danger-soft: #2a1715;
+  --danger-line: #4a2723;
 }
 
 @theme inline {
@@ -75,6 +87,9 @@
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
   --color-accent-soft: var(--accent-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-line: var(--danger-line);
 
   --font-sans: var(--font-geist-sans);
   --font-display: var(--font-display-serif);

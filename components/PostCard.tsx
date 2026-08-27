@@ -6,6 +6,8 @@ import { CATEGORY_LABELS, type Post } from "@/lib/types";
 import { useAppSelector } from "@/store/hooks";
 import { selectLikeCount, selectViewCount } from "@/store/selectors";
 
+import { Avatar } from "./Avatar";
+
 interface PostCardProps {
   post: Post;
 }
@@ -13,12 +15,6 @@ interface PostCardProps {
 export function PostCard({ post }: PostCardProps) {
   const likes = useAppSelector((state) => selectLikeCount(state, post));
   const views = useAppSelector((state) => selectViewCount(state, post));
-  const initials = post.author.name
-    .split(" ")
-    .map((part) => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
   const createdDate = new Date(post.createdAt);
   const formattedDate = createdDate.toLocaleDateString(undefined, {
     month: "short",
@@ -54,12 +50,12 @@ export function PostCard({ post }: PostCardProps) {
 
       <footer className="mt-6 flex items-center justify-between gap-4 border-t border-line pt-4 text-sm text-muted">
         <div className="flex min-w-0 items-center gap-3">
-          <div
-            className="flex size-9 shrink-0 items-center justify-center rounded-full bg-sunken text-xs font-semibold text-ink"
-            aria-hidden
-          >
-            {initials}
-          </div>
+          <Avatar
+            name={post.author.name}
+            src={post.author.avatar}
+            size={36}
+            className="text-xs"
+          />
           <div className="min-w-0">
             <p className="truncate font-medium text-ink">{post.author.name}</p>
             <p>

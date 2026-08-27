@@ -16,6 +16,7 @@ import { recordView } from "@/store/slices/engagementSlice";
 import { deletePost } from "@/store/slices/postsSlice";
 import { showUndoToast } from "@/store/slices/uiSlice";
 
+import { Avatar } from "./Avatar";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { EmptyState } from "./EmptyState";
 import { LikeButton } from "./LikeButton";
@@ -31,15 +32,6 @@ function formatDate(value: string): string {
     day: "numeric",
     year: "numeric",
   });
-}
-
-function initials(name: string): string {
-  return name
-    .split(" ")
-    .map((part) => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
 }
 
 function PostDetailSkeleton() {
@@ -134,12 +126,12 @@ export function PostDetail({ id }: PostDetailProps) {
 
       <div className="mt-6 flex flex-col gap-5 border-b border-line pb-8 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 items-center gap-3">
-          <div
-            className="flex size-11 shrink-0 items-center justify-center rounded-full bg-sunken text-sm font-semibold text-ink"
-            aria-hidden
-          >
-            {initials(post.author.name)}
-          </div>
+          <Avatar
+            name={post.author.name}
+            src={post.author.avatar}
+            size={44}
+            className="text-sm"
+          />
           <div className="min-w-0">
             <p className="truncate font-medium text-ink">{post.author.name}</p>
             <p className="text-sm text-muted">

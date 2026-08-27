@@ -19,7 +19,7 @@ import {
   type Theme,
 } from "./types";
 
-const STORAGE_KEY = "kotoba:v1";
+export const STORAGE_KEY = "kotoba:v1";
 const STORAGE_VERSION = 1;
 
 export interface PersistedState {
