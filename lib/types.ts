@@ -62,12 +62,9 @@ export interface RecentView {
   viewedAt: string;
 }
 
-// TODO: I think we should replace light with a high-contrast theme for accessibility.
-// Keep the system theme as it is easiest on the eyes for most users.
-// Keep the dark theme because it makes it easier for night reading.
-export type Theme = "light" | "dark" | "system";
+export type Theme = "high-contrast" | "dark" | "system";
 
-export const THEMES: readonly Theme[] = ["light", "dark", "system"];
+export const THEMES: readonly Theme[] = ["high-contrast", "dark", "system"];
 
 export function isTheme(value: unknown): value is Theme {
   return typeof value === "string" && THEMES.includes(value as Theme);

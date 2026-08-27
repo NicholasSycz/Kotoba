@@ -3,6 +3,7 @@ import { Geist, Instrument_Serif } from "next/font/google";
 
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
+import { ToastHost } from "@/components/ToastHost";
 import { StoreProvider } from "@/store/StoreProvider";
 
 import "./globals.css";
@@ -37,6 +38,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             {children}
           </main>
           <SiteFooter />
+          <ToastHost />
         </StoreProvider>
       </body>
     </html>

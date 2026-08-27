@@ -8,19 +8,19 @@ import { selectHydrated, selectTheme } from "@/store/selectors";
 import { setTheme } from "@/store/slices/uiSlice";
 
 const NEXT_THEME: Record<Theme, Theme> = {
-  system: "light",
-  light: "dark",
+  system: "high-contrast",
+  "high-contrast": "dark",
   dark: "system",
 };
 
 const LABEL: Record<Theme, string> = {
   system: "System",
-  light: "Light",
+  "high-contrast": "High contrast",
   dark: "Dark",
 };
 
 function Icon({ theme }: { theme: Theme }) {
-  if (theme === "light") {
+  if (theme === "high-contrast") {
     return (
       <svg viewBox="0 0 24 24" aria-hidden className="size-4" fill="currentColor">
         <circle cx="12" cy="12" r="4.2" />
@@ -59,7 +59,7 @@ function Icon({ theme }: { theme: Theme }) {
 }
 
 /**
- * Applies the stored theme to `<html>` and cycles system → light → dark.
+ * Applies the stored theme to `<html>` and cycles system → high contrast → dark.
  *
  * The attribute is written from an effect rather than during render, so the
  * server-rendered markup stays theme-neutral and CSS handles the OS preference

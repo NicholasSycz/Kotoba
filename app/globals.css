@@ -24,7 +24,7 @@
 
 /* Default (no explicit choice) follows the OS. */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  :root:not([data-theme="high-contrast"]) {
     --bg: #14120f;
     --surface: #1c1916;
     --surface-sunken: #232019;
@@ -39,6 +39,19 @@
 }
 
 /* An explicit choice wins over the OS in both directions. */
+:root[data-theme="high-contrast"] {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-sunken: #f2f2f2;
+  --ink: #000000;
+  --ink-muted: #303030;
+  --line: #595959;
+  --accent: #0047d9;
+  --accent-ink: #ffffff;
+  --accent-soft: #e8f0ff;
+  --focus: #0047d9;
+}
+
 :root[data-theme="dark"] {
   --bg: #14120f;
   --surface: #1c1916;

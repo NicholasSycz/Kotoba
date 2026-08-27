@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { CATEGORY_LABELS } from "@/lib/types";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -10,10 +10,13 @@ import {
   selectPostById,
   selectSeedError,
   selectSeedStatus,
+  selectViewCount,
 } from "@/store/selectors";
 import { recordView } from "@/store/slices/engagementSlice";
 import { deletePost } from "@/store/slices/postsSlice";
+import { showUndoToast } from "@/store/slices/uiSlice";
 
+import { ConfirmDialog } from "./ConfirmDialog";
 import { EmptyState } from "./EmptyState";
 import { LikeButton } from "./LikeButton";
 import { Skeleton } from "./Skeleton";
@@ -58,7 +61,11 @@ function PostDetailSkeleton() {
 export function PostDetail({ id }: PostDetailProps) {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const post = useAppSelector((state) => selectPostById(state, id));
+  const views = useAppSelector((state) =>
+    post ? selectViewCount(state, post) : 0,
+  );
   const status = useAppSelector(selectSeedStatus);
   const error = useAppSelector(selectSeedError);
 
@@ -95,8 +102,9 @@ export function PostDetail({ id }: PostDetailProps) {
   const updated = post.updatedAt ? formatDate(post.updatedAt) : null;
 
   const handleDelete = () => {
-    if (!window.confirm("Delete this post?")) return;
     dispatch(deletePost(post.id));
+    dispatch(showUndoToast({ postId: post.id, title: post.title }));
+    setDeleteOpen(false);
     router.push("/blog");
   };
 
@@ -151,7 +159,7 @@ export function PostDetail({ id }: PostDetailProps) {
           </Link>
           <button
             type="button"
-            onClick={handleDelete}
+            onClick={() => setDeleteOpen(true)}
             className="rounded-full border border-line px-4 py-2 text-sm font-medium text-muted transition-colors hover:border-accent hover:text-ink"
           >
             Delete
@@ -162,9 +170,18 @@ export function PostDetail({ id }: PostDetailProps) {
       <div className="prose-body mt-8 text-lg text-ink">{post.body}</div>
 
       <footer className="mt-10 flex flex-wrap gap-4 border-t border-line pt-5 text-sm text-muted">
-        <span>{post.views.toLocaleString()} views</span>
+        <span>{views.toLocaleString()} views</span>
         <span>{post.tags.map((tag) => `#${tag}`).join(" ")}</span>
       </footer>
+
+      <ConfirmDialog
+        open={deleteOpen}
+        title="Delete this post?"
+        description="The post will disappear from your blog, but you can undo it from the next screen."
+        confirmLabel="Delete"
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteOpen(false)}
+      />
     </article>
   );
 }

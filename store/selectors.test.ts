@@ -6,7 +6,9 @@ import {
   selectAllPosts,
   selectCategoryCounts,
   selectFilteredPosts,
+  selectLikeCount,
   selectRecentlyViewedPosts,
+  selectViewCount,
 } from "./selectors";
 import type { RootState } from "./index";
 
@@ -37,7 +39,14 @@ function state(posts: Partial<RootState["posts"]>, ui = {}, engagement = {}) {
       error: null,
       ...posts,
     },
-    ui: { category: "all", query: "", theme: "system", hydrated: true, ...ui },
+    ui: {
+      category: "all",
+      query: "",
+      theme: "system",
+      undoToast: null,
+      hydrated: true,
+      ...ui,
+    },
     engagement: { likedIds: [], recentlyViewed: [], ...engagement },
   } as RootState;
 }
@@ -197,5 +206,43 @@ describe("selectRecentlyViewedPosts", () => {
     );
 
     expect(result.map((p) => p.id)).toEqual(["remote-1"]);
+  });
+});
+
+describe("engagement counts", () => {
+  it("adds the reader's like to the source count", () => {
+    const item = post({ id: "remote-1", baseLikes: 12 });
+
+    expect(
+      selectLikeCount(state({ remote: { "remote-1": item } }), item),
+    ).toBe(12);
+    expect(
+      selectLikeCount(
+        state({ remote: { "remote-1": item } }, {}, { likedIds: ["remote-1"] }),
+        item,
+      ),
+    ).toBe(13);
+  });
+
+  it("adds one local view after the reader has opened the post", () => {
+    const item = post({ id: "remote-1", views: 40 });
+
+    expect(
+      selectViewCount(state({ remote: { "remote-1": item } }), item),
+    ).toBe(40);
+    expect(
+      selectViewCount(
+        state(
+          { remote: { "remote-1": item } },
+          {},
+          {
+            recentlyViewed: [
+              { id: "remote-1", viewedAt: "2026-03-01T00:00:00.000Z" },
+            ],
+          },
+        ),
+        item,
+      ),
+    ).toBe(41);
   });
 });

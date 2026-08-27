@@ -7,10 +7,17 @@ import { hydrate } from "../hydrate";
 
 export type CategoryFilter = Category | "all";
 
+export interface UndoToast {
+  id: string;
+  postId: string;
+  title: string;
+}
+
 export interface UiState {
   category: CategoryFilter;
   query: string;
   theme: Theme;
+  undoToast: UndoToast | null;
   /**
    * False until persisted state has been read. Components that render
    * reader-owned data wait on this so the server-rendered markup and the first
@@ -23,6 +30,7 @@ const initialState: UiState = {
   category: "all",
   query: "",
   theme: "system",
+  undoToast: null,
   hydrated: false,
 };
 
@@ -43,6 +51,21 @@ const uiSlice = createSlice({
     setTheme(state, action: PayloadAction<Theme>) {
       state.theme = action.payload;
     },
+    showUndoToast(
+      state,
+      action: PayloadAction<{ postId: string; title: string }>,
+    ) {
+      state.undoToast = {
+        id: `${action.payload.postId}-${Date.now()}`,
+        postId: action.payload.postId,
+        title: action.payload.title,
+      };
+    },
+    dismissUndoToast(state, action: PayloadAction<string | undefined>) {
+      if (!action.payload || state.undoToast?.id === action.payload) {
+        state.undoToast = null;
+      }
+    },
   },
 
   extraReducers(builder) {
@@ -53,7 +76,13 @@ const uiSlice = createSlice({
   },
 });
 
-export const { setCategory, setQuery, clearFilters, setTheme } =
-  uiSlice.actions;
+export const {
+  setCategory,
+  setQuery,
+  clearFilters,
+  setTheme,
+  showUndoToast,
+  dismissUndoToast,
+} = uiSlice.actions;
 
 export default uiSlice.reducer;

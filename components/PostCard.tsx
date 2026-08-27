@@ -1,12 +1,18 @@
+"use client";
+
 import Link from "next/link";
 
 import { CATEGORY_LABELS, type Post } from "@/lib/types";
+import { useAppSelector } from "@/store/hooks";
+import { selectLikeCount, selectViewCount } from "@/store/selectors";
 
 interface PostCardProps {
   post: Post;
 }
 
 export function PostCard({ post }: PostCardProps) {
+  const likes = useAppSelector((state) => selectLikeCount(state, post));
+  const views = useAppSelector((state) => selectViewCount(state, post));
   const initials = post.author.name
     .split(" ")
     .map((part) => part[0])
@@ -64,8 +70,8 @@ export function PostCard({ post }: PostCardProps) {
         </div>
 
         <div className="shrink-0 text-right text-xs">
-          <p>{post.baseLikes.toLocaleString()} likes</p>
-          <p>{post.views.toLocaleString()} views</p>
+          <p>{likes.toLocaleString()} likes</p>
+          <p>{views.toLocaleString()} views</p>
         </div>
       </footer>
     </article>

@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kotoba
 
-## Getting Started
+Kotoba is a small front-end blog app built with Next.js, TypeScript, Redux Toolkit, and Tailwind CSS. It seeds posts from a public API, then lets the reader create, edit, delete, like, search, filter, and revisit posts with all reader-owned changes persisted in the browser.
 
-First, run the development server:
+## Running Locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Useful checks:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm run lint
+npm run typecheck
+npm test
+```
 
-## Learn More
+## Features
 
-To learn more about Next.js, take a look at the following resources:
+- Seeded posts from DummyJSON.
+- Responsive blog index with search, category tabs, loading skeletons, empty states, and error state.
+- Full post detail pages with like/unlike, edit, delete, and recently viewed tracking.
+- Local create and edit forms using `react-hook-form` and `zod`.
+- Delete confirmation plus undo toast.
+- Homepage with featured posts, recently viewed posts, and a random post action.
+- Theme toggle with persisted preference.
+- Browser persistence for local posts, edits, deletions, likes, recently viewed posts, and theme.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## API Choice
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The original assignment allowed a public API substitute. I used DummyJSON instead of a RapidAPI-backed service because it requires no API key. This matters for a front-end-only app: a client-side API key would be exposed in the browser bundle unless a backend or server route acted as a proxy.
 
-## Deploy on Vercel
+DummyJSON also provides useful real data for a blog app:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `/posts/tag/{history,crime,fiction}` for category-based seed posts.
+- `/users?limit=0&select=firstName,lastName,image` for bylines and avatars.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+DummyJSON posts do not include timestamps, so seeded posts receive deterministic generated dates. That keeps sorting stable across reloads without pretending the API supplied dates it does not have.
+
+## State And Persistence Model
+
+The app does not persist a single merged array of posts. Seeded API data and reader changes are stored separately:
+
+```txt
+remote      fetched posts, not persisted
+local       reader-created posts, persisted
+edits       overrides for seeded posts, persisted
+deletedIds  tombstones for deleted posts, persisted
+```
+
+`selectAllPosts` merges those layers at read time:
+
+```txt
+remote posts
+- deleted ids
++ edits layered on matching remote posts
++ local posts
+sorted newest first
+```
+
+This keeps the API feed fresh while preserving the reader's changes. For example, editing or deleting an API-sourced post survives a reload without freezing the entire seed feed in localStorage.
+
+Persistence is handled through a small localStorage layer and Redux listener middleware. Only reader-owned state is written: local posts, edits, deleted IDs, likes, recently viewed posts, and theme. Reads and writes are best-effort so unavailable storage does not break the app.
+
+## Trade-Offs
+
+- Filters live in Redux rather than URL query params. That keeps the Redux data flow explicit for this assignment; URL sync would also be good.
+- Seed data is fetched client-side. Server-side seed rendering would need different caching and error-handling decisions.
+- Recently viewed is stored as a capped list, so local view count adds one when a post has been viewed by the reader; it is not an unlimited per-post analytics counter.
+- There is no pagination. The current seed size is small enough for local filtering and rendering.
+
+## What I Would Improve Next
+
+- Add URL-synced search/category filters.
+- Add pagination or infinite scroll if the feed grows.
+- Replace `window.localStorage` persistence with a small IndexedDB layer for larger drafts.
+- Add more component-level tests for forms, delete undo, and theme behavior.
+- Add richer author handling for locally written posts.
+- Evaluate whether Redux is still worth the boilerplate for this app. React Context could cover simple app-wide UI state, while Zustand would be a good fit if the app keeps selectors, persistence, and more structured client state.
+- As the app grows, reorganize `components/` into domain and shared UI folders. The current flat structure is fine at this size, but grouping post, layout, filter, and reusable UI components would make ownership clearer.
+
+## Design Rationale
+Kotoba means “word” or “language” in Japanese, which shaped the app as a quiet, text-first reading and writing space. The interface keeps decoration restrained so posts stay easy to scan and comfortable to read. The palette, spacing, and typography are intentionally quiet, with stronger contrast reserved for actions, focus states, and theme controls.
+
+The app supports system, dark, and high-contrast themes. System mode follows the reader’s OS preference, dark mode supports low-light reading, and high-contrast mode improves accessibility for readers who need clearer visual separation.

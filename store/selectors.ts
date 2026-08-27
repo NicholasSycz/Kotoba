@@ -119,3 +119,7 @@ export const selectIsLiked = (state: RootState, id: string): boolean =>
 
 export const selectLikeCount = (state: RootState, post: Post): number =>
   post.baseLikes + (selectIsLiked(state, post.id) ? 1 : 0);
+
+export const selectViewCount = (state: RootState, post: Post): number =>
+  post.views +
+  (state.engagement.recentlyViewed.some((view) => view.id === post.id) ? 1 : 0);
